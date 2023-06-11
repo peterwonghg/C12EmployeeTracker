@@ -24,7 +24,7 @@ function start() {
     inquirer.prompt([
         {
           type: 'list',
-          name: 'request',
+          name: 'selection',
           message: 'What would you like to do?',
           choices: ['View All Departments',
                     'View All Roles',
@@ -42,7 +42,6 @@ function start() {
                     'View Department Budget', // Bonus
                     'Exit'
                    ],
-          loop: false,
         },
     ])
   
@@ -91,8 +90,11 @@ function start() {
     else if(answer.selection === "View Department Budget") {
       viewDepartmentBudget();
     }
-    else{
+    else if(answer.selection === "Exit") {
       connection.end();
+    }    
+    else{
+      start()
     }
   });
 
@@ -101,25 +103,40 @@ function start() {
 
 //View All Departments Function
 function viewAllDepartments() {
+connection.query(
+  "SELECT * FROM department", function(err, result, fields) {
+    if (err) throw err;
+    console.table(result);
+    // prompt the user for another selection
+    start();
+  }
+);
+};
+
+// View all roles Funstion
+function viewAllRoles() {
+  connection.query(  
+    "SELECT role.id, role.title, role.salary, department.department_name FROM role LEFT JOIN department on role.department_id = department.id",
+    function(err, result, fields) {
+      if (err) throw err;
+       console.table(result);
+       // prompt the user for another selection
+       start();
+     }
+  ); 
+};
+
+// View All Employees Function
+function viewAllEmployees() {
   connection.query(
     "SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, employee.manager_id, role.title, role.salary, role.id, department.id FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id", 
     function(err, result, fields) {
       if (err) throw err;
       console.table(result);
-      // re-prompt the user for another selection
+      // prompt the user for another selection
       start();
     }
   );
-};
-
-// TODO 2. Function to view all roles
-function viewAllRoles() {
-
-};
-
-// TODO 2. Function to view all employees
-function viewAllEmployees() {
-
 };
 
 // TODO 2. Function to add a department
@@ -176,3 +193,4 @@ function deleteEmployee() {
 function viewDepartmentBudget() {
 
 };
+
