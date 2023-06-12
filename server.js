@@ -139,19 +139,158 @@ function viewAllEmployees() {
   );
 };
 
-// TODO 2. Function to add a department
+// Add All Helpers
+
+const roleChoices = [];
+const employeeChoices = [];
+const departmentChoices = [];
+const managerChoices = [];
+
+function searchRole(){  
+  
+  connection.query("SELECT * FROM role", function (err, data) {
+      if (err) throw err;
+      for (i = 0; i < data.length; i++) {
+          roleChoices.push(data[i].id + "-" + data[i].title)
+      }
+   })
+  }
+
+function searchEmployee(){  
+   connection.query("SELECT * FROM employee", function (err, data) {
+       if (err) throw err;
+       for (i = 0; i < data.length; i++) {
+           employeeChoices.push(data[i].id + "-" + data[i].first_name+" "+ data[i].last_name)
+       }
+   }) 
+  }
+
+function searchDepartment(){
+connection.query("SELECT * FROM department", function (err, data) {
+  if (err) throw err;
+  for (i = 0; i < data.length; i++) {
+      departmentChoices.push(data[i].id + "-" + data[i].department_name)
+  }
+})
+}
+
+function searchManager(){
+  connection.query("SELECT * FROM role", function (err, data) {
+    if (err) throw err;
+    for (i = 0; i < data.length; i++) {
+        managerChoices.push(data[i].id + "-" + data[i].title)
+    }
+ })
+}
+
+// Add Department Function
 function addDepartment() {
 
+  searchRole()
+  searchEmployee()
+  searchDepartment()
+
+  inquirer.prompt([
+  {
+    name: "name",
+    type: "input",
+    message: "Enter the name of the department to be added:"
+  }
+  ]).then(function(answer) {
+    const query = 
+    `INSERT INTO department (department_name) VALUES ('${answer.name}')`;
+    connection.query(query, function(err, res) {
+      console.log(`Added ${answer.name} Department`)
+    });
+    start();
+  });
 };
 
-// TODO 2. Function to add a role
+// Add Role function
 function addRole() {
 
+  searchRole()
+  searchEmployee()
+  searchDepartment()
+  
+  inquirer.prompt([
+  {
+    name: "role",
+    type: "input",
+    message: "Enter the role to be added:"
+  },
+  
+  {
+      name: "department",
+      type: "list",
+      message: "Select the department for the new role:",
+      choices: departmentChoices
+  },
+  
+  {
+    name: "salary",
+    type: "number",
+    message: "Enter the salary of the new role:"
+  },
+  
+   ]).then(function(answer) {
+     console.log(`${answer.role}`)
+    const getDepartmentId =answer.department.split("-")
+    const query = 
+    `INSERT INTO role (title, salary, department_id)
+     VALUES ('${answer.role}','${answer.salary}','${getDepartmentId[0]}')`;
+    connection.query(query, function(err, res) {
+      console.log(`The new role ${answer.role} has been added!`)
+    });
+    start();
+  });
 };
 
-// TODO 2. Function to add employee
+// Add Employee Function
 function addEmployee() {
 
+  searchRole()
+  searchEmployee()
+  searchManager()
+
+  inquirer.prompt([
+  {
+    name: "firstname",
+    type: "input",
+    message: "Enter the employee's first name?"
+  },
+
+  {
+      name: "lastname",
+      type: "input",
+      message: "Enter the employee's last name?"
+  },
+
+  {
+      name: "role",
+      type: "list",
+      message: "Select the employee's role?",
+      choices: roleChoices 
+    },
+
+    {
+      name: "manager",
+      type: "list",
+      message: "Who is the employee's manager?",
+      choices: managerChoices
+    }
+  
+   ]).then(function(answer) {
+    var getRoleId =answer.role.split("-")
+    var getManagerId=answer.manager.split("-")
+    var query = 
+    `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+     VALUES ('${answer.firstname}','${answer.lastname}','${getRoleId[0]}','${getManagerId[0]}')`;
+    connection.query(query, function(err, res) {
+      console.log(`new employee ${answer.firstname} ${answer.lastname} added!`)
+    });
+    start();
+  });
 };
 
 // TODO 2. Function to update an employee role
