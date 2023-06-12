@@ -59,13 +59,13 @@ VALUES ("Plant Manager", 190000.00, 1),
        ("Design Engineer", 125000.00, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Virve", "Kristiina", 1, NULL),
+VALUES ("Kristina", "Virve", 1, NULL),
        ("Jimmie", "Ewart", 2, 1),
        ("Anup", "Manish", 3, 1),
        ("Nuh", "Fikri", 4, NULL),
        ("Edison", "Luciano", 5, 4),
-       ("Gang", "JingYi", 6, 4),
-       ("Ismail", "Nurul", 7, NULL),
+       ("JingYi", "Gang", 6, 4),
+       ("Nurul", "Ismail", 7, NULL),
        ("Nicostrato", "Liberatore", 8, 7),
        ("Phelan", "Shamus", 9, 7),
        ("Oghenero", "Adegoke", 10, NULL),

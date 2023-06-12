@@ -281,9 +281,9 @@ function addEmployee() {
     }
   
    ]).then(function(answer) {
-    var getRoleId =answer.role.split("-")
-    var getManagerId=answer.manager.split("-")
-    var query = 
+    const getRoleId =answer.role.split("-")
+    const getManagerId=answer.manager.split("-")
+    const query = 
     `INSERT INTO employee (first_name, last_name, role_id, manager_id)
      VALUES ('${answer.firstname}','${answer.lastname}','${getRoleId[0]}','${getManagerId[0]}')`;
     connection.query(query, function(err, res) {
@@ -295,6 +295,72 @@ function addEmployee() {
 
 // TODO 2. Function to update an employee role
 function updateEmployeeRole() {
+
+  connection.query('SELECT * FROM employee', function (err, result) {
+    if (err) throw (err);
+    inquirer
+      .prompt([
+        {
+          name: "employeeName",
+          type: "list",
+  
+          message: "Select the employee to update:",
+          choices: function () {
+            const employeeArray = [];
+            result.forEach(result => {
+              employeeArray.push(
+                result.last_name
+              );
+            })
+            return employeeArray;
+          }
+
+        }
+      ])
+   
+      .then(function (answer) {
+        console.log(answer);
+        const name = answer.employeeName;
+      
+        connection.query("SELECT * FROM role", function (err, res) {
+          inquirer
+            .prompt([
+              {
+                name: "role",
+                type: "list",
+                message: "Enter new role?",
+                choices: function () {
+                  const roleArray = [];
+                  res.forEach(res => {
+                    roleArray.push(
+                      res.title)
+                  })
+                  return roleArray;
+                }
+              }
+            ]).then(function (roleAnswer) {
+              const role = roleAnswer.role;
+              console.log(role);
+              connection.query('SELECT * FROM role WHERE title = ?', [role], function (err, res) {
+                if (err) throw (err);
+                let roleId = res[0].id;
+   
+                let query = "UPDATE employee SET role_id = ? WHERE last_name =  ?";
+                let values = [parseInt(roleId), name]
+        
+                connection.query(query, values,
+                  function (err, res, fields) {
+                    console.log(`${name}'s role has been updated as ${role}.`)
+                    start();
+                  })
+                // viewAll();
+              })
+            })
+        })
+
+      })
+
+  })
 
 };
 
@@ -311,14 +377,14 @@ function viewEmployeesByDepartment() {
 
 };
 
-// TODO 2. Function to delete departments roles employees
+// TODO 2. Function to delete department
 function deleteDepartment() {
 
 };
 
 
 
-// TODO 2. Function to delete role department
+// TODO 2. Function to delete role
 function deleteRole() {
 
 };
