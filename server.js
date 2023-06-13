@@ -293,7 +293,7 @@ function addEmployee() {
   });
 };
 
-// TODO 2. Function to update an employee role
+// Update Employee Role
 function updateEmployeeRole() {
 
   connection.query('SELECT * FROM employee', function (err, result) {
@@ -353,7 +353,7 @@ function updateEmployeeRole() {
                     console.log(`${name}'s role has been updated as ${role}.`)
                     start();
                   })
-                // viewAll();
+
               })
             })
         })
